@@ -18,32 +18,10 @@ const DELETE_ARTICLE = gql`
 
 // Article components for every article on the list.
 const Article = ({ id, title, onArticleDelete }) => {
-    const [isHovered, setIsHovered] = useState(false);
-
-    const style = {
-        color: "#613A28",
-        padding: "8px 10px",
-        border: "1px solid #613A28",
-        display: "flex",
-        justifyContent: "space-between",
-        backgroundColor: isHovered ? "lightGray" : "transparent", // Change background on hover
-        transition: "background-color 0.3s ease" // Smooth transition effect
-    };
-
-    const handleMouseEnter = () => {
-        setIsHovered(true);
-    };
-
-    const handleMouseLeave = () => {
-        setIsHovered(false);
-    };
-
+    
     return (
-        <div>
-            <ul style={style}
-                onMouseEnter={handleMouseEnter}
-                onMouseLeave={handleMouseLeave}
-            >
+        <div className='mb-4'>
+            <ul className='flex justify-between text-[#613A28] px-3 py-2 border border-[#613A28] hover:bg-gray-500 transition-colors duration-300 ease-in-out mb-4'>
                 <Link to={`/articles/${id}`}>
                     {title}
                 </Link>
@@ -95,8 +73,8 @@ const ArticleList = () => {
     if (error) return <p>Error :(</p>;
 
     return (
-        <div style={{ padding: "20px 30px" }}>
-            <h5>Article List</h5>
+        <div className='p-4'>
+            <h5 className='mb-5 text-green-500'>Article List</h5>
             {data.articles.map((article) => ( // Pass each article object instead of individual properties
                 <Article key={article.id} 
                          id={article.id} 
@@ -116,10 +94,7 @@ const ArticleList = () => {
 
             {/* Popup confirmation dialog for deleting an article */}
             {isPopupVisible && (
-                <div style={{
-                    position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
-                    padding: '20px', backgroundColor: 'white', border: '1px solid gray', zIndex: 1000
-                }}>
+                <div className='fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 p-5 bg-white border border-gray-300 z-50'>
                     <p>Are you sure you want to delete this article?</p>
                     <button onClick={handleDelete} style={{ marginRight: '10px', border: "1px solid red", color: "red" }}>Yes!</button>
                     <button onClick={handleCancel}>Cancel</button>

@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 
 import { useQuery } from '@apollo/client';
 import { useParams, Link } from 'react-router-dom';
+import { FaArrowLeftLong } from "react-icons/fa6";
+
 import { GET_ARTICLE_DETAIL } from '../queries/fetchArticle';
 import TextCreate from './TextCreate';
 import TextList from './TextList';
@@ -25,14 +27,18 @@ const ArticleDetail = () => {
     console.log(article.texts);
 
     return (
-        <div style={{ padding: "20px 30px" }}>
-            <Link to="/" >
-                <i className='material-icons'>arrow_back</i>
-            </Link>
+        <div className='px-7 py-5'>
+            <div className='bg-white w-fit px-5 py-2 border mb-5 hover:bg-gray-300'>
+                <Link to="/">
+                    <FaArrowLeftLong />
+                </Link>
+            </div>
             <h6>Article ID: 
-                <span style={{ color: "gray" }}> {article.id}</span>
+                <span className='text-gray-500 text-sm'> {article.id}</span>
             </h6>
-            <h5>{article.title}</h5>
+            <h6>Atricle Title: 
+                <span className='mb-5 text-2xl font-semibold'> {article.title}</span>
+            </h6>
 
             <br />
 

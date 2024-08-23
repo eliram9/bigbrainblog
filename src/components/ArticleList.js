@@ -74,7 +74,7 @@ const ArticleList = () => {
 
     return (
         <div className='p-4'>
-            <h5 className='mb-5 text-green-500'>Article List</h5>
+            <h5 className='mb-5 text-2xl font-semibold'>Article List</h5>
             {data.articles.map((article) => ( // Pass each article object instead of individual properties
                 <Article key={article.id} 
                          id={article.id} 

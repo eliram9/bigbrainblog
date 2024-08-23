@@ -5,10 +5,13 @@ const models = require('./models');
 const { graphqlHTTP } = require('express-graphql');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
-const path = require('path'); 
+const path = require('path');
 const schema = require('./schema/schema');
+const cors = require('cors');  // Add this line
 
 const app = express();
+
+app.use(cors());  // Add this line
 
 // MongoDB connection URI from the .env file
 const MONGO_URI = process.env.REACT_APP_MONGO_URI;
@@ -40,14 +43,6 @@ app.use(express.static(path.join(__dirname, '../dist')));
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '../dist', 'index.html'));
 });
-
-// Webpack middleware for development
-if (process.env.NODE_ENV !== 'production') {
-  const webpackMiddleware = require('webpack-dev-middleware');
-  const webpack = require('webpack');
-  const webpackConfig = require('../webpack.config.js');
-  app.use(webpackMiddleware(webpack(webpackConfig)));
-}
 
 // Start the server
 const PORT = process.env.PORT || 4000;

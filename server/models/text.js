@@ -20,4 +20,4 @@ TextSchema.statics.like = function(id) {
     });
 }
 
-mongoose.model('text', TextSchema);
+mongoose.model('text', TextSchema); // Ensure that this line is present

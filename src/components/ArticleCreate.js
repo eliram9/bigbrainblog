@@ -67,7 +67,7 @@ const ArticleCreate = () => {
                 {/* Validation error message */}
                 {errorMessage && <p className='text-xs text-red-500'>{errorMessage}</p>}
                 <button type="submit"
-                        className='bg-white w-fit px-5 py-2 border mb-5 hover:bg-gray-300'
+                        className='bg-[#613A28] text-white w-fit px-5 py-2 border mb-5 hover:bg-gray-500'
                 >
                     Submit
                 </button>

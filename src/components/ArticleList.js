@@ -7,6 +7,7 @@ import { IoMdAdd } from "react-icons/io";
 
 import { useQuery, useMutation } from '@apollo/client';
 import { GET_ALL_ARTICLES_QUERY } from '../queries/fetchAllArticles';
+import { formatDate } from '../utils/formatDate';
 
 const DELETE_ARTICLE = gql`
     mutation DeleteArticle($id: ID!) {
@@ -17,13 +18,14 @@ const DELETE_ARTICLE = gql`
 `;
 
 // Article components for every article on the list.
-const Article = ({ id, title, onArticleDelete }) => {
+const Article = ({ id, title, createdDate, onArticleDelete }) => {
     
     return (
         <div className='mb-4'>
             <ul className='flex justify-between text-[#613A28] px-3 py-2 border border-[#613A28] hover:bg-gray-300 transition-colors duration-300 ease-in-out mb-4'>
                 <Link to={`/articles/${id}`}>
                     {title}
+                    <p className='text-xs text-gray-500'>Created Date: {formatDate(createdDate)}</p>
                 </Link>
                 <i className='flex items-center cursor-pointer text-red-600'
                     onClick={() => onArticleDelete(id)} // Attach the delete function to the onClick event
@@ -79,6 +81,7 @@ const ArticleList = () => {
                 <Article key={article.id} 
                          id={article.id} 
                          title={article.title} 
+                         createdDate={article.createdDate}
                          onArticleDelete={onArticleDeleteClick} 
                 />
             ))}

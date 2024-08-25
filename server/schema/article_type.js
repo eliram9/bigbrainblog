@@ -5,17 +5,18 @@ const TextType = require('./text_type'); // Replaces 'LyricType'
 const Article = mongoose.model('article'); // Replaces 'Song'
 
 const ArticleType = new GraphQLObjectType({
-  name: 'ArticleType',
-  fields: () => ({
-    id: { type: GraphQLID },
-    title: { type: GraphQLString },
-    texts: {
-      type: new GraphQLList(require('./text_type')), // Dynamically require to avoid circular dependency
-      resolve(parentValue) {
-        return Article.findTexts(parentValue.id);
-      }
-    }
-  })
+    name: 'ArticleType',
+    fields: () => ({
+        id: { type: GraphQLID },
+        title: { type: GraphQLString },
+        texts: {
+            type: new GraphQLList(require('./text_type')), // Dynamically require to avoid circular dependency
+            resolve(parentValue) {
+                return Article.findTexts(parentValue.id);
+            }
+        },
+        createdDate: { type: GraphQLString }
+    })
 });
 
 module.exports = ArticleType;

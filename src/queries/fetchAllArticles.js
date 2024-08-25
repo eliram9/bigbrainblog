@@ -5,6 +5,7 @@ export const GET_ALL_ARTICLES_QUERY = gql`
         articles {
             id
             title
+            createdDate
         }
     }
 `;

@@ -3,6 +3,10 @@ const Schema = mongoose.Schema;
 
 const ArticleSchema = new Schema({
   title: { type: String },
+  createdDate: {
+    type: Date,
+    default: Date.now // Automatically sets the date when a new document is created
+  },
   user: {
     type: Schema.Types.ObjectId,
     ref: 'user'

@@ -13,6 +13,7 @@ const CREATE_NEW_ARTICLE = gql`
         addArticle(title: $title) {
             id
             title
+            createdDate
         }
     }
 `;

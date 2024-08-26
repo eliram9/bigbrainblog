@@ -1,11 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, forwardRef } from 'react';
 
 import { useParams } from 'react-router-dom';
 import { useMutation } from '@apollo/client';
 import ReactQuill from 'react-quill';
-import 'react-quill/dist/quill.snow.css'; // import styles
+import 'react-quill/dist/quill.snow.css';
 
 import { ADD_NEW_PARAGRAPH } from '../queries/addParagraph';
+
+// A new component that wraps ReactQuill with forwardRef
+const QuillWrapper = forwardRef((props, ref) => (
+    <ReactQuill {...props} ref={ref} />
+  ));
 
 const TextCreate = () => {
     const { id } = useParams();

@@ -13,6 +13,8 @@ const DELETE_ARTICLE = gql`
     mutation DeleteArticle($id: ID!) {
         deleteArticle(id: $id) {
             id
+            title
+            createdDate
         }
     }
 `;
@@ -58,8 +60,13 @@ const ArticleList = () => {
     const handleDelete = () => {
         deleteArticle({
             variables: { id: selectedArticleId },
-            refetchQueries: [{ query: GET_ALL_ARTICLES_QUERY }] // Refetch the articles query after deletion
+            refetchQueries: [{ query: GET_ALL_ARTICLES_QUERY }]
         }).then(() => {
+            setIsPopupVisible(false);
+            setSelectedArticleId(null);
+        }).catch(error => {
+            console.error('Error deleting article:', error);
+            // Handle the error appropriately, e.g., show an error message to the user
             setIsPopupVisible(false);
             setSelectedArticleId(null);
         });

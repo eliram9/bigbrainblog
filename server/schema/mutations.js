@@ -39,7 +39,7 @@ const mutation = new GraphQLObjectType({
             type: ArticleType,
             args: { id: { type: GraphQLID } },
             resolve(parentValue, { id }) {
-                return Article.findByIdAndRemove(id);
+                return Article.findByIdAndDelete(id);
             }
         }
     }

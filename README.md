@@ -15,5 +15,5 @@
 
 ### Acknowledgements 🍻
 
-This project based and inspired [GraphQL with React course](https://www.udemy.com/course/graphql-with-react-course/?couponCode=SKILLS4SALEA) by [Stephen Grider](https://github.com/stephengrider). 
-The project has been updated to use the latest technologies listed above.
+This project is based on and inspired by [GraphQL with React course](https://www.udemy.com/course/graphql-with-react-course/?couponCode=SKILLS4SALEA) by [Stephen Grider](https://github.com/stephengrider). 
+It has been updated to use the latest technologies listed above.

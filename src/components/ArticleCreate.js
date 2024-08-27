@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import gql from 'graphql-tag';
 import { useMutation } from '@apollo/client';
@@ -6,6 +6,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { FaArrowLeftLong } from "react-icons/fa6";
 
 import { GET_ALL_ARTICLES_QUERY } from '../queries/fetchAllArticles';
+import { auth, signInWithGoogle } from '../utils/firebase';
 
 
 const CREATE_NEW_ARTICLE = gql`
@@ -21,9 +22,18 @@ const CREATE_NEW_ARTICLE = gql`
 const ArticleCreate = () => {
     const [title, setTitle] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
 
     const [createArticle, { data, loading, error }] = useMutation(CREATE_NEW_ARTICLE);
     const navigate = useNavigate(); // Use the navigate hook for navigation
+
+    // Track authentication state
+    useEffect(() => {
+        const unsubscribe = auth.onAuthStateChanged((user) => {
+            setIsAuthenticated(!!user);
+        });
+        return () => unsubscribe();
+    }, []);
 
     const CreateNewArticle = (evt) => {
         evt.preventDefault();
@@ -57,25 +67,37 @@ const ArticleCreate = () => {
             </div>
             
             <h5 className='mb-5 text-2xl font-semibold'>Create New Article</h5>
-            <form
-                  onSubmit={CreateNewArticle}
-            >
+            <form onSubmit={CreateNewArticle}>
                 <label>Article new article title: </label>
-                <input onChange={(evt) => setTitle(evt.target.value)}
-                       value={title}
-                       className='p-1 w-full mb-5'
+                <input 
+                    onChange={(evt) => setTitle(evt.target.value)}
+                    value={title}
+                    className='p-1 w-full mb-5'
+                    disabled={!isAuthenticated} // Disable input if not authenticated
                 />
+                
                 {/* Validation error message */}
                 {errorMessage && <p className='text-xs text-red-500'>{errorMessage}</p>}
-                <button type="submit"
-                        className='bg-[#613A28] text-white w-fit px-5 py-2 border mb-5 hover:bg-gray-500'
+                <button 
+                    type="submit"
+                    disabled={!isAuthenticated} // Disable button if not authenticated
+                    className={`w-fit px-5 py-2 border mb-5 ${isAuthenticated 
+                        ? 'bg-[#613A28] text-white hover:bg-gray-500' 
+                        : 'bg-gray-500 text-gray-700 cursor-not-allowed'}`
+                    }
+                    onClick={(evt) => {
+                        if (!isAuthenticated) {
+                            evt.preventDefault(); // Prevents form submission
+                            signInWithGoogle(); // Opens the Google login
+                        }
+                    }} 
                 >
                     Submit
                 </button>
             </form>
             {loading && <p>Submitting...</p>}
             {error && <p>Error :( Please try again</p>}
-            {data && <p style={{ color: "green" }}>Article "{data.addArticle.title}" created successfully!</p>}
+            {data && <p className='text-green-600'>Article "{data.addArticle.title}" created successfully!</p>}
         </div>
     )
 }

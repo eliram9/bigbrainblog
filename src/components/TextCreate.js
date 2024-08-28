@@ -6,6 +6,7 @@ import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 
 import { ADD_NEW_PARAGRAPH } from '../queries/addParagraph';
+import { auth } from '../utils/firebase';
 
 // A new component that wraps ReactQuill with forwardRef
 const QuillWrapper = forwardRef((props, ref) => (
@@ -17,6 +18,15 @@ const TextCreate = () => {
     const [paragraph, setParagraph] = useState(''); // Initialize with an empty string
     const [addTextToArticle, { data, loading, error }] = useMutation(ADD_NEW_PARAGRAPH);
     const [successMessage, setSuccessMessage] = useState('');
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+    // Track authentication state
+    useEffect(() => {
+        const unsubscribe = auth.onAuthStateChanged((user) => {
+            setIsAuthenticated(!!user);
+        });
+        return () => unsubscribe();
+    }, []);
 
     const onSubmit = (evt) => {
         evt.preventDefault();
@@ -64,7 +74,16 @@ const TextCreate = () => {
                     onChange={setParagraph} // Directly set the new value
                 />
                 <button type="submit"
-                        className='bg-[#613A28] text-white w-fit px-5 py-2 mt-3 border mb-5 hover:bg-gray-500'
+                        disabled={!isAuthenticated}
+                        className={`w-fit px-5 py-2 border ${isAuthenticated 
+                            ? 'bg-[#613A28] text-white hover:bg-gray-500 mt-5' 
+                            : 'bg-gray-500 text-gray-700 cursor-not-allowed mt-5'}`
+                        }
+                        onClick={(evt) => {
+                            if (!isAuthenticated) {
+                                evt.preventDefault(); // Prevents form submission
+                            }
+                        }} 
                 >
                     Submit
                 </button>

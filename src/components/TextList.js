@@ -7,8 +7,8 @@ const TextList = ({ texts }) => {
     }
 
     return (
-        <div>
-            <h6 style={{ marginBottom: "20px" }}>Paragraphs</h6>
+        <div className='py-4'>
+            <h6>Paragraphs:</h6>
             {texts.map((text, index) => (
                 <li key={text.id} className='collection-item' style={{ padding: "10px 15px", border: "1px solid green", marginBottom: "20px" }}>
                     {text.paragraph}

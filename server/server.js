@@ -1,5 +1,7 @@
 require('dotenv').config();
 
+require('dotenv').config();
+
 const express = require('express');
 const models = require('./models');
 const { graphqlHTTP } = require('express-graphql');
@@ -7,14 +9,16 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const path = require('path');
 const schema = require('./schema/schema');
-const cors = require('cors');  // Add this line
+const cors = require('cors');
 
 const app = express();
 
-app.use(cors());  // Add this line
+app.use(cors());
+app.use(bodyParser.json());
 
 // MongoDB connection URI from the .env file
-const MONGO_URI = process.env.REACT_APP_MONGO_URI;
+// const MONGO_URI = process.env.REACT_APP_MONGO_URI;
+const MONGO_URI = process.env.MONGO_URI;
 if (!MONGO_URI) {
   throw new Error('You must provide a Mongo Atlas URI');
 }
@@ -23,25 +27,23 @@ mongoose.Promise = global.Promise;
 mongoose.connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true });
 mongoose.connection
   .once('open', () => console.log('Connected to Mongo Atlas instance.'))
-  .on('error', (error) =>
-    console.log('Error connecting to Mongo Atlas:', error)
-  );
+  .on('error', (error) => console.log('Error connecting to Mongo Atlas:', error));
 
-app.use(bodyParser.json());
+// GraphQL endpoint
 app.use(
   '/graphql',
   graphqlHTTP({
     schema,
-    graphiql: true
+    graphiql: true,
   })
 );
 
 // Serve static files from the React app
-app.use(express.static(path.join(__dirname, '../dist')));
+app.use(express.static(path.join(__dirname, '../build')));
 
 // The "catchall" handler: for any request that doesn't match one above, send back index.html
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../dist', 'index.html'));
+  res.sendFile(path.join(__dirname, '../build', 'index.html'));
 });
 
 // Start the server

@@ -14,7 +14,8 @@ const app = express();
 app.use(cors());  // Add this line
 
 // MongoDB connection URI from the .env file
-const MONGO_URI = process.env.REACT_APP_MONGO_URI;
+// const MONGO_URI = process.env.REACT_APP_MONGO_URI;
+const MONGO_URI = process.env.MONGO_URI;
 if (!MONGO_URI) {
   throw new Error('You must provide a Mongo Atlas URI');
 }

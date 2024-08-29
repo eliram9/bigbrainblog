@@ -1,7 +1,5 @@
 require('dotenv').config();
 
-require('dotenv').config();
-
 const express = require('express');
 const models = require('./models');
 const { graphqlHTTP } = require('express-graphql');
@@ -44,11 +42,11 @@ app.use(
 );
 
 // Serve static files from the React app
-app.use(express.static(path.join(__dirname, '../dist')));
+app.use(express.static(path.join(__dirname, '../build')));
 
 // The "catchall" handler: for any request that doesn't match one above, send back index.html
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../dist', 'index.html'));
+  res.sendFile(path.join(__dirname, '../build', 'index.html'));
 });
 
 // Start the server

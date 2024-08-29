@@ -25,7 +25,13 @@ if (!MONGO_URI) {
 mongoose.Promise = global.Promise;
 mongoose.connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true });
 mongoose.connection
-  .once('open', () => console.log('Connected to Mongo Atlas instance.'))
+  .once('open', () => {
+    console.log('Connected to Mongo Atlas instance.');
+    console.log('REACT_APP_MONGO_URI:', process.env.REACT_APP_MONGO_URI);
+    console.log('REACT_APP_FIREBASE_API_KEY:', process.env.REACT_APP_FIREBASE_API_KEY);
+    console.log('REACT_APP_FIREBASE_AUTH_DOMAIN:', process.env.REACT_APP_FIREBASE_AUTH_DOMAIN);
+    // Add similar lines for other environment variables
+  })
   .on('error', (error) => console.log('Error connecting to Mongo Atlas:', error));
 
 // GraphQL endpoint

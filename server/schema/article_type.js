@@ -9,6 +9,7 @@ const ArticleType = new GraphQLObjectType({
     fields: () => ({
         id: { type: GraphQLID },
         title: { type: GraphQLString },
+        author: { type: GraphQLString },
         texts: {
             type: new GraphQLList(require('./text_type')), // Dynamically require to avoid circular dependency
             resolve(parentValue) {

@@ -12,10 +12,11 @@ const mutation = new GraphQLObjectType({
         addArticle: { // Replaces 'addSong'
             type: ArticleType,
             args: {
-                title: { type: GraphQLString }
+                title: { type: GraphQLString },
+                author: { type: GraphQLString }
             },
-            resolve(parentValue, { title }) {
-                return new Article({ title }).save();
+            resolve(parentValue, { title, author }) {
+                return new Article({ title, author }).save();
             }
         },
         addTextToArticle: { // Replaces 'addLyricToSong'

@@ -10,10 +10,11 @@ import { auth, signInWithGoogle } from '../utils/firebase';
 
 
 const CREATE_NEW_ARTICLE = gql`
-    mutation CreateArticle($title: String) {
-        addArticle(title: $title) {
+    mutation CreateArticle($title: String, $author: String) {
+        addArticle(title: $title, author: $author) {
             id
             title
+            author
             createdDate
         }
     }
@@ -21,6 +22,7 @@ const CREATE_NEW_ARTICLE = gql`
 
 const ArticleCreate = () => {
     const [title, setTitle] = useState('');
+    const [author, setAuthor] = useState('');  
     const [errorMessage, setErrorMessage] = useState('');
     const [isAuthenticated, setIsAuthenticated] = useState(false);
 
@@ -37,26 +39,33 @@ const ArticleCreate = () => {
 
     const CreateNewArticle = (evt) => {
         evt.preventDefault();
+
+        // Validate the author field
+        if (author.length < 2) {
+            setErrorMessage('Author name must be at least 2 characters long.');
+            return; // Stop further execution
+        }
         
         // Validate the title length
         if (title.length < 2) {
             setErrorMessage('Title must be at least 2 characters long.');
             return; // Stop further execution
         }
-
-        // If validation passes, clear the error message and proceed
-        setErrorMessage('');
-        createArticle({
-            variables: {
-                title: title
-            },
-            refetchQueries: [{ query: GET_ALL_ARTICLES_QUERY }] // Refetch the articles query
-        // Right after submission, clean the input and navigate to "/" (ArticleList)     
-        }).then(() => {
-            setTitle(''); 
-            navigate('/');
-        });
-    };
+            // If validation passes, clear the error message and proceed
+            setErrorMessage('');
+            createArticle({
+                variables: {
+                    title: title,
+                    author: author // Pass the author variable here
+                },
+                refetchQueries: [{ query: GET_ALL_ARTICLES_QUERY }] // Refetch the articles query
+                // Right after submission, clean the input and navigate to "/" (ArticleList)     
+            }).then(() => {
+                setTitle(''); 
+                setAuthor(''); // Clear the author input after submission
+                navigate('/');
+            });
+        };
 
     return (
         <div className='px-7 py-5'>
@@ -68,6 +77,15 @@ const ArticleCreate = () => {
             
             <h5 className='mb-5 text-2xl font-semibold'>Create New Article</h5>
             <form onSubmit={CreateNewArticle}>
+                {/* Author */}
+                <label>Author: </label>
+                <input 
+                    onChange={(evt) => setAuthor(evt.target.value)}
+                    value={author}
+                    className='p-1 w-full mb-5'
+                    disabled={!isAuthenticated} // Disable input if not authenticated
+                />
+
                 <label>Article new article title: </label>
                 <input 
                     onChange={(evt) => setTitle(evt.target.value)}

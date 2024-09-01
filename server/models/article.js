@@ -3,6 +3,7 @@ const Schema = mongoose.Schema;
 
 const ArticleSchema = new Schema({
   title: { type: String },
+  author: { type: String }, 
   createdDate: {
     type: Date,
     default: Date.now // Automatically sets the date when a new document is created
@@ -29,7 +30,7 @@ ArticleSchema.statics.addText = function(id, paragraph) {
     });
 }
 
-ArticleSchema.statics.findTexts = function(id) { // Replaces 'findLyrics'
+ArticleSchema.statics.findTexts = function(id) {
   return this.findById(id)
     .populate('texts')
     .then(article => article.texts);

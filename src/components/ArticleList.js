@@ -19,12 +19,13 @@ const DELETE_ARTICLE = gql`
 `;
 
 // Article component for every article on the list.
-const Article = ({ id, title, createdDate, onArticleDelete, isAuthenticated }) => {
+const Article = ({ id, title, createdDate, author, onArticleDelete, isAuthenticated }) => {
     return (
         <div className='mb-4'>
             <ul className='flex justify-between text-[#613A28] px-3 py-2 border border-[#613A28] hover:bg-gray-300 transition-colors duration-300 ease-in-out mb-4'>
                 <Link to={`/articles/${id}`}>
                     {title}
+                    <p className='text-xs text-gray-500'>By: {author}</p>
                     <p className='text-xs text-gray-500'>Created Date: {formatDate(createdDate)}</p>
                 </Link>
                 <i className={`flex items-center ${isAuthenticated ? 'cursor-pointer text-red-600' : 'cursor-not-allowed text-gray-400'}`}
@@ -95,7 +96,8 @@ const ArticleList = () => {
             {data.articles.map((article) => (
                 <Article key={article.id} 
                          id={article.id} 
-                         title={article.title} 
+                         title={article.title}
+                         author={article.author} 
                          createdDate={article.createdDate}
                          onArticleDelete={onArticleDeleteClick}
                          isAuthenticated={isAuthenticated}

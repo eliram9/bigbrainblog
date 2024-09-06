@@ -10,7 +10,7 @@ const TextList = ({ texts }) => {
         <div className='py-4'>
             <h6>Paragraphs:</h6>
             {texts.map((text, index) => (
-                <li key={text.id} className='collection-item' style={{ padding: "10px 15px", border: "1px solid green", marginBottom: "20px" }}>
+                <li key={text.id} className='py-3 px-4 border border-green-700 mb-5 overflow-auto'>
                     {text.paragraph}
                 </li>
             ))}

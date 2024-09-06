@@ -20,6 +20,21 @@ const TextCreate = () => {
     const [successMessage, setSuccessMessage] = useState('');
     const [isAuthenticated, setIsAuthenticated] = useState(false);
 
+    // Define your custom toolbar options
+    const modules = {
+        toolbar: [
+            [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+            [{ 'font': [] }],
+            ['bold', 'italic', 'underline', 'strike'],
+            [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+            [{ 'script': 'sub'}, { 'script': 'super' }],
+            [{ 'indent': '-1'}, { 'indent': '+1' }],
+            [{ 'direction': 'rtl' }],
+            [{ 'color': [] }, { 'background': [] }],
+            ['link', 'image'],
+        ]
+    };
+
     // Track authentication state
     useEffect(() => {
         const unsubscribe = auth.onAuthStateChanged((user) => {
@@ -71,7 +86,8 @@ const TextCreate = () => {
                 <ReactQuill
                     theme="snow"
                     value={paragraph}
-                    onChange={setParagraph} // Directly set the new value
+                    onChange={setParagraph} 
+                    modules={modules}
                 />
                 <button type="submit"
                         disabled={!isAuthenticated}

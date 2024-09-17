@@ -6,21 +6,24 @@ import { LuFileEdit } from "react-icons/lu";
 
 import { auth } from '../utils/firebase'; 
 import { DELETE_PARAGRAPH } from '../queries/deleteParagraph';
+import { UPDATE_PARAGRAPH } from '../queries/updateParagraph'; 
 import { GET_ARTICLE_DETAIL } from '../queries/fetchArticle';
 
 
 // Any paragraph on the list
-const Item = ({ children, isAuthenticated, onDelete }) => {
+const Item = ({ children, isAuthenticated, onDelete, onEdit }) => {
     const plainText = children.replace(/<\/?[^>]+(>|$)/g, ""); // Strips out HTML tags - display plain text.
 
     return (
-        <div className='flex py-3 px-4 border border-green-700 mb-5 overflow-auto'>
+        <div className='flex py-3 px-4 border border-green-700 mb-5 overflow-auto hover:bg-gray-300'>
             <div className='flex-grow mr-3'>
                 {plainText}
             </div>
             
             <div className='flex items-center space-x-3'>
-                <div className={`flex items-center ${isAuthenticated ? 'cursor-pointer text-[#613A28]' : 'cursor-not-allowed text-gray-400'}`}>
+                <div className={`flex items-center ${isAuthenticated ? 'cursor-pointer text-[#613A28]' : 'cursor-not-allowed text-gray-400'}`}
+                     onClick={onEdit}
+                >
                     <LuFileEdit />
                 </div>
 
@@ -37,10 +40,18 @@ const Item = ({ children, isAuthenticated, onDelete }) => {
 const TextList = ({ articleId, texts }) => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [isDeletePopupVisible, setIsDeletePopupVisible] = useState(false);
+    const [isEditPopupVisible, setIsEditPopupVisible] = useState(false);
     const [selectedTextId, setSelectedTextId] = useState(null);
+    const [newParagraph, setNewParagraph] = useState(''); // New paragraph state for editing
 
     // Delete mutation with refetchQueries to refresh the article after deletion
     const [deleteParagraph] = useMutation(DELETE_PARAGRAPH, {
+        refetchQueries: [{ query: GET_ARTICLE_DETAIL, variables: { id: articleId } }],
+        awaitRefetchQueries: true
+    });
+
+    // Update mutation with refetchQueries to refresh the article after editing
+    const [editParagraph] = useMutation(UPDATE_PARAGRAPH, {
         refetchQueries: [{ query: GET_ARTICLE_DETAIL, variables: { id: articleId } }],
         awaitRefetchQueries: true
     });
@@ -51,6 +62,14 @@ const TextList = ({ articleId, texts }) => {
         });
         return () => unsubscribe();
     }, []);
+
+    const onEditClick = (textId, currentParagraph) => {
+        if (isAuthenticated) {
+            setSelectedTextId(textId);  // Set the selected paragraph ID
+            setNewParagraph(currentParagraph);  // Pre-fill the input with the current paragraph text
+            setIsEditPopupVisible(true);  // Show the edit popup
+        }
+    };
 
     const onDeleteClick = (textId) => {
         if (isAuthenticated) {
@@ -73,6 +92,22 @@ const TextList = ({ articleId, texts }) => {
         setSelectedTextId(null);  // Reset the selected text ID
     };
 
+    const handleEditSave = () => {
+        editParagraph({ variables: { id: selectedTextId, paragraph: newParagraph } })  // Execute the edit mutation
+            .then(() => {
+                setIsEditPopupVisible(false);  // Close the popup after saving
+                setSelectedTextId(null);  // Clear the selected text ID
+                setNewParagraph('');  // Reset the paragraph input
+            })
+            .catch(err => console.error(err));
+    };
+
+    const handleEditCancel = () => {
+        setIsEditPopupVisible(false);  // Hide the edit popup
+        setSelectedTextId(null);  // Reset the selected text ID
+        setNewParagraph('');  // Reset the paragraph input
+    };
+
     if (!texts || texts.length === 0) {
         return <p>No paragraphs to display yet.</p>;
     }
@@ -84,6 +119,7 @@ const TextList = ({ articleId, texts }) => {
                 <Item key={text.id}
                       isAuthenticated={isAuthenticated}    
                       onDelete={() => onDeleteClick(text.id)}  // Trigger delete confirmation
+                      onEdit={() => onEditClick(text.id, text.paragraph)}  // Pass current paragraph for editing
                 >
                     {text.paragraph}
                 </Item>
@@ -104,6 +140,33 @@ const TextList = ({ articleId, texts }) => {
                         <button 
                             className='border-gray-400 border text-gray-600 py-1 px-3 hover:bg-gray-100 transition-colors duration-200'
                             onClick={handleDeleteCancel}  // Cancel deletion
+                        >
+                            Cancel
+                        </button>
+                    </div>
+                </>
+            )}
+
+            {/* Popup for edit paragraph */}
+            {isEditPopupVisible && (
+                <>
+                    <div className="fixed inset-0 bg-black bg-opacity-50 z-40"></div>
+                    <div className='fixed top-1/3 left-1/2 transform -translate-x-1/2 -translate-y-1/2 p-5 bg-white border border-gray-300 z-50 shadow-lg'>
+                        <h3 className='mb-4 text-lg font-semibold'>Edit Paragraph</h3>
+                        <textarea
+                            value={newParagraph}
+                            onChange={(e) => setNewParagraph(e.target.value)}
+                            className='w-full p-2 mb-4 border border-gray-300 rounded'
+                        />
+                        <button 
+                            className='mr-3 bg-[#613A28] text-white py-1 px-3 hover:bg-[#573424] transition-colors duration-200'
+                            onClick={handleEditSave}  // Confirm and execute edit
+                        >
+                            Save
+                        </button>
+                        <button 
+                            className='border-gray-400 border text-gray-600 py-1 px-3 hover:bg-gray-100 transition-colors duration-200'
+                            onClick={handleEditCancel}  // Cancel editing
                         >
                             Cancel
                         </button>

@@ -10,6 +10,11 @@ const TextSchema = new Schema({
   paragraph: { type: String }
 });
 
+// Static method for updating paragraph
+TextSchema.statics.updateParagraph = function(id, newParagraph) {
+  return this.findByIdAndUpdate(id, { paragraph: newParagraph }, { new: true });
+};
+
 TextSchema.statics.like = function(id) {
   const Text = mongoose.model('text');
 
@@ -18,6 +23,6 @@ TextSchema.statics.like = function(id) {
       ++text.likes;
       return text.save();
     });
-}
+};
 
-mongoose.model('text', TextSchema); // Ensure that this line is present
+mongoose.model('text', TextSchema);

@@ -19,21 +19,14 @@ const mutation = new GraphQLObjectType({
                 return new Article({ title, author }).save();
             }
         },
-        addTextToArticle: { 
+        updateArticleTitle: {
             type: ArticleType,
             args: {
-                paragraph: { type: GraphQLString },
-                articleId: { type: GraphQLID }
+                id: { type: GraphQLID },
+                title: { type: GraphQLString }
             },
-            resolve(parentValue, { paragraph, articleId }) {
-                return Article.addText(articleId, paragraph); 
-            }
-        },
-        likeText: { 
-            type: TextType,
-            args: { id: { type: GraphQLID } },
-            resolve(parentValue, { id }) {
-                return Text.like(id);
+            resolve(parentValue, { id, title }) {
+                return Article.findByIdAndUpdate(id, { title }, { new: true });
             }
         },
         deleteArticle: { 
@@ -43,14 +36,14 @@ const mutation = new GraphQLObjectType({
                 return Article.findByIdAndDelete(id);
             }
         },
-        updateArticleTitle: {
+        addTextToArticle: { 
             type: ArticleType,
             args: {
-                id: { type: GraphQLID },
-                title: { type: GraphQLString }
+                paragraph: { type: GraphQLString },
+                articleId: { type: GraphQLID }
             },
-            resolve(parentValue, { id, title }) {
-                return Article.findByIdAndUpdate(id, { title }, { new: true });
+            resolve(parentValue, { paragraph, articleId }) {
+                return Article.addText(articleId, paragraph); 
             }
         },
         deleteParagraph: {
@@ -65,6 +58,23 @@ const mutation = new GraphQLObjectType({
                 } catch (err) {
                     throw new Error(`Error deleting paragraph: ${err.message}`);
                 }
+            }
+        },
+        editParagraph: {
+            type: TextType,  // Return the updated TextType
+            args: {
+                id: { type: GraphQLID },
+                paragraph: { type: GraphQLString }
+            },
+            resolve(parentValue, { id, paragraph }) {
+                return Text.updateParagraph(id, paragraph);  // Use the updateParagraph method from your schema
+            }
+        },
+        likeText: { 
+            type: TextType,
+            args: { id: { type: GraphQLID } },
+            resolve(parentValue, { id }) {
+                return Text.like(id);
             }
         }
     }

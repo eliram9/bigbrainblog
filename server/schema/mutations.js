@@ -9,7 +9,7 @@ const TextType = require('./text_type'); // Replaces 'LyricType'
 const mutation = new GraphQLObjectType({
     name: 'Mutation',
     fields: {
-        addArticle: { // Replaces 'addSong'
+        addArticle: { 
             type: ArticleType,
             args: {
                 title: { type: GraphQLString },
@@ -19,28 +19,52 @@ const mutation = new GraphQLObjectType({
                 return new Article({ title, author }).save();
             }
         },
-        addTextToArticle: { // Replaces 'addLyricToSong'
+        addTextToArticle: { 
             type: ArticleType,
             args: {
                 paragraph: { type: GraphQLString },
                 articleId: { type: GraphQLID }
             },
             resolve(parentValue, { paragraph, articleId }) {
-                return Article.addText(articleId, paragraph); // Updated method call
+                return Article.addText(articleId, paragraph); 
             }
         },
-        likeText: { // Replaces 'likeLyric'
+        likeText: { 
             type: TextType,
             args: { id: { type: GraphQLID } },
             resolve(parentValue, { id }) {
                 return Text.like(id);
             }
         },
-        deleteArticle: { // Replaces 'deleteSong'
+        deleteArticle: { 
             type: ArticleType,
             args: { id: { type: GraphQLID } },
             resolve(parentValue, { id }) {
                 return Article.findByIdAndDelete(id);
+            }
+        },
+        updateArticleTitle: {
+            type: ArticleType,
+            args: {
+                id: { type: GraphQLID },
+                title: { type: GraphQLString }
+            },
+            resolve(parentValue, { id, title }) {
+                return Article.findByIdAndUpdate(id, { title }, { new: true });
+            }
+        },
+        deleteParagraph: {
+            type: GraphQLID,  // Only return the ID of the deleted paragraph
+            args: {
+                id: { type: GraphQLID }
+            },
+            resolve: async (parentValue, { id }) => {
+                try {
+                    const deletedParagraph = await Text.findByIdAndDelete(id);
+                    return deletedParagraph ? deletedParagraph.id : null;
+                } catch (err) {
+                    throw new Error(`Error deleting paragraph: ${err.message}`);
+                }
             }
         }
     }

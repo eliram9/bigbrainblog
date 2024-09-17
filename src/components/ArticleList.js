@@ -1,48 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import gql from 'graphql-tag';
-import { IoTrashOutline } from "react-icons/io5";
+
 import { IoMdAdd } from "react-icons/io";
 import { useQuery, useMutation } from '@apollo/client';
+
 import { GET_ALL_ARTICLES_QUERY } from '../queries/fetchAllArticles';
-import { formatDate } from '../utils/formatDate';
+import { UPDATE_ARTICLE_TITLE } from '../queries/updateArticleTitle';
+import { DELETE_ARTICLE } from '../queries/deleteArticle';
 import { auth, signInWithGoogle } from '../utils/firebase'; 
+import Article from './Article';
 
-const DELETE_ARTICLE = gql`
-    mutation DeleteArticle($id: ID!) {
-        deleteArticle(id: $id) {
-            id
-            title
-            createdDate
-        }
-    }
-`;
-
-// Article component for every article on the list.
-const Article = ({ id, title, createdDate, author, onArticleDelete, isAuthenticated }) => {
-    return (
-        <div className='mb-4'>
-            <ul className='flex justify-between text-[#613A28] px-3 py-2 border border-[#613A28] hover:bg-gray-300 transition-colors duration-300 ease-in-out mb-4'>
-                <Link to={`/articles/${id}`}>
-                    {title}
-                    <p className='text-xs text-gray-500'>By: {author}</p>
-                    <p className='text-xs text-gray-500'>Created Date: {formatDate(createdDate)}</p>
-                </Link>
-                <i className={`flex items-center ${isAuthenticated ? 'cursor-pointer text-red-600' : 'cursor-not-allowed text-gray-400'}`}
-                    onClick={() => isAuthenticated ? onArticleDelete(id, title) : signInWithGoogle()}
-                >
-                    <IoTrashOutline className="text-xl" />
-                </i>
-            </ul>
-        </div>
-    );
-};
 
 const ArticleList = () => {
     const { loading, error, data } = useQuery(GET_ALL_ARTICLES_QUERY, {
         fetchPolicy: 'network-only'
     });
 
+    const [updateArticleTitle] = useMutation(UPDATE_ARTICLE_TITLE); // New mutation
     const [deleteArticle] = useMutation(DELETE_ARTICLE);
 
     // State to track user authentication
@@ -52,6 +25,10 @@ const ArticleList = () => {
     const [isPopupVisible, setIsPopupVisible] = useState(false);
     const [selectedArticle, setSelectedArticle] = useState({ id: null, title: '' });
 
+     // State to handle popup visibility and selected article for title update
+    const [isEditPopupVisible, setIsEditPopupVisible] = useState(false);
+    const [editTitle, setEditTitle] = useState('');
+
     // Track authentication state
     useEffect(() => {
         const unsubscribe = auth.onAuthStateChanged((user) => {
@@ -59,6 +36,32 @@ const ArticleList = () => {
         });
         return () => unsubscribe();
     }, []);
+
+     // handle the title edit
+     const onTitleEdit = (id, currentTitle) => {
+        setSelectedArticle({ id, title: currentTitle });
+        setEditTitle(currentTitle);
+        setIsEditPopupVisible(true);
+    };
+
+    const handleEditSave = () => {
+        updateArticleTitle({
+            variables: { id: selectedArticle.id, title: editTitle },
+            refetchQueries: [{ query: GET_ALL_ARTICLES_QUERY }]
+        }).then(() => {
+            setIsEditPopupVisible(false);
+            setSelectedArticle({ id: null, title: '' });
+            setEditTitle('');
+        }).catch(error => {
+            console.error('Error updating article title:', error);
+        });
+    };
+
+    const handleEditCancel = () => {
+        setIsEditPopupVisible(false);
+        setSelectedArticle({ id: null, title: '' });
+        setEditTitle('');
+    };
 
     // Show the popup and set the article to be deleted
     const onArticleDeleteClick = (id, title) => {
@@ -99,6 +102,7 @@ const ArticleList = () => {
                          title={article.title}
                          author={article.author} 
                          createdDate={article.createdDate}
+                         onTitleEdit={onTitleEdit}
                          onArticleDelete={onArticleDeleteClick}
                          isAuthenticated={isAuthenticated}
                 />
@@ -137,6 +141,32 @@ const ArticleList = () => {
                         </button>
                         <button onClick={handleCancel}
                                 className='bg-[#613A28] text-white py-1 px-3 hover:bg-[#573424] transition-colors duration-200'
+                        >
+                            Cancel
+                        </button>
+                    </div>
+                </>
+            )}
+
+            {/* Popup for edit tilte */}
+            {isEditPopupVisible && (
+                <>
+                    <div className="fixed inset-0 bg-black bg-opacity-50 z-40"></div>
+                    <div className='fixed top-1/3 left-1/2 transform -translate-x-1/2 -translate-y-1/2 p-5 bg-white border border-gray-300 z-50 shadow-lg'>
+                        <h3 className='mb-4 text-lg font-semibold'>Edit Article Title</h3>
+                        <input
+                            type="text"
+                            value={editTitle}
+                            onChange={(e) => setEditTitle(e.target.value)}
+                            className='w-full p-2 mb-4 border border-gray-300 rounded'
+                        />
+                        <button onClick={handleEditSave} 
+                                className='mr-3 bg-[#613A28] text-white py-1 px-3 hover:bg-[#573424] transition-colors duration-200'
+                        >
+                            Save
+                        </button>
+                        <button onClick={handleEditCancel}
+                                className='border-[#613A28] border text-[#613A28] py-1 px-3 hover:bg-gray-100 transition-colors duration-200'
                         >
                             Cancel
                         </button>

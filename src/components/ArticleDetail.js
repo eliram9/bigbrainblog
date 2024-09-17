@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-
 import { useQuery } from '@apollo/client';
 import { useParams, Link } from 'react-router-dom';
 import { FaArrowLeftLong } from "react-icons/fa6";
@@ -36,14 +35,14 @@ const ArticleDetail = () => {
             <h6>Article ID: 
                 <span className='text-gray-500 text-sm'> {article.id}</span>
             </h6>
-            <h6>Atricle Title: 
+            <h6>Article Title: 
                 <span className='mb-5 text-2xl font-semibold'> {article.title}</span>
             </h6>
 
             <br />
 
-            <TextCreate />
-            <TextList texts={article.texts || []} /> 
+            <TextCreate articleId={id} />
+            <TextList texts={article.texts || []} articleId={id} />
         </div>
     );
 };

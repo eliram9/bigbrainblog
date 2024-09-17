@@ -1,7 +1,78 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
-const TextList = ({ texts }) => {
-    // Check if texts is an array and map over it safely
+import { useMutation } from '@apollo/client';
+import { IoTrashOutline } from "react-icons/io5";
+import { LuFileEdit } from "react-icons/lu";
+
+import { auth } from '../utils/firebase'; 
+import { DELETE_PARAGRAPH } from '../queries/deleteParagraph';
+import { GET_ARTICLE_DETAIL } from '../queries/fetchArticle';
+
+
+// Any paragraph on the list
+const Item = ({ children, isAuthenticated, onDelete }) => {
+    const plainText = children.replace(/<\/?[^>]+(>|$)/g, ""); // Strips out HTML tags - display plain text.
+
+    return (
+        <div className='flex py-3 px-4 border border-green-700 mb-5 overflow-auto'>
+            <div className='flex-grow mr-3'>
+                {plainText}
+            </div>
+            
+            <div className='flex items-center space-x-3'>
+                <div className={`flex items-center ${isAuthenticated ? 'cursor-pointer text-[#613A28]' : 'cursor-not-allowed text-gray-400'}`}>
+                    <LuFileEdit />
+                </div>
+
+                <div className={`flex items-center ${isAuthenticated ? 'cursor-pointer text-red-600' : 'cursor-not-allowed text-gray-400'}`}
+                     onClick={onDelete}  // Trigger the delete handler
+                >
+                    <IoTrashOutline />
+                </div>
+            </div>
+        </div>
+    );
+};
+
+const TextList = ({ articleId, texts }) => {
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [isDeletePopupVisible, setIsDeletePopupVisible] = useState(false);
+    const [selectedTextId, setSelectedTextId] = useState(null);
+
+    // Delete mutation with refetchQueries to refresh the article after deletion
+    const [deleteParagraph] = useMutation(DELETE_PARAGRAPH, {
+        refetchQueries: [{ query: GET_ARTICLE_DETAIL, variables: { id: articleId } }],
+        awaitRefetchQueries: true
+    });
+
+    useEffect(() => {
+        const unsubscribe = auth.onAuthStateChanged((user) => {
+            setIsAuthenticated(!!user);  // Set authentication state
+        });
+        return () => unsubscribe();
+    }, []);
+
+    const onDeleteClick = (textId) => {
+        if (isAuthenticated) {
+            setSelectedTextId(textId);  // Set the selected paragraph ID
+            setIsDeletePopupVisible(true);  // Show the delete confirmation popup
+        }
+    };
+
+    const handleDeleteConfirm = () => {
+        deleteParagraph({ variables: { id: selectedTextId } })  // Execute the delete mutation
+            .then(() => {
+                setIsDeletePopupVisible(false);  // Close the popup after deletion
+                setSelectedTextId(null);  // Clear the selected text ID
+            })
+            .catch(err => console.error(err));
+    };
+
+    const handleDeleteCancel = () => {
+        setIsDeletePopupVisible(false);  // Hide the popup without deleting
+        setSelectedTextId(null);  // Reset the selected text ID
+    };
+
     if (!texts || texts.length === 0) {
         return <p>No paragraphs to display yet.</p>;
     }
@@ -9,11 +80,36 @@ const TextList = ({ texts }) => {
     return (
         <div className='py-4'>
             <h6>Paragraphs:</h6>
-            {texts.map((text, index) => (
-                <li key={text.id} className='py-3 px-4 border border-green-700 mb-5 overflow-auto'>
+            {texts.map((text) => (
+                <Item key={text.id}
+                      isAuthenticated={isAuthenticated}    
+                      onDelete={() => onDeleteClick(text.id)}  // Trigger delete confirmation
+                >
                     {text.paragraph}
-                </li>
+                </Item>
             ))}
+
+            {/* Popup for delete confirmation */}
+            {isDeletePopupVisible && (
+                <>
+                    <div className="fixed inset-0 bg-black bg-opacity-50 z-40"></div>
+                    <div className='fixed top-1/3 left-1/2 transform -translate-x-1/2 -translate-y-1/2 p-5 bg-white border border-gray-300 z-50 shadow-lg'>
+                        <h3 className='mb-4 text-lg font-semibold'>Are you sure you want to delete this paragraph?</h3>
+                        <button 
+                            className='mr-3 bg-red-600 text-white py-1 px-3 hover:bg-red-700 transition-colors duration-200'
+                            onClick={handleDeleteConfirm}  // Confirm and execute deletion
+                        >
+                            Delete
+                        </button>
+                        <button 
+                            className='border-gray-400 border text-gray-600 py-1 px-3 hover:bg-gray-100 transition-colors duration-200'
+                            onClick={handleDeleteCancel}  // Cancel deletion
+                        >
+                            Cancel
+                        </button>
+                    </div>
+                </>
+            )}
         </div>
     );
 };

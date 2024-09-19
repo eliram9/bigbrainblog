@@ -10,6 +10,8 @@ const ArticleType = new GraphQLObjectType({
         id: { type: GraphQLID },
         title: { type: GraphQLString },
         author: { type: GraphQLString },
+        category: {type: GraphQLString},
+        summary: {type: GraphQLString},
         openingImageUrl: { type: GraphQLString }, // Added openingImageUrl field
         texts: {
             type: new GraphQLList(require('./text_type')), // Dynamically require to avoid circular dependency

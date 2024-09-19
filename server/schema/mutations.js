@@ -14,10 +14,12 @@ const mutation = new GraphQLObjectType({
             args: {
                 title: { type: GraphQLString },
                 author: { type: GraphQLString },
-                openingImageUrl: { type: GraphQLString } // Added openingImageUrl to args
+                category: {type: GraphQLString},
+                summary: {type: GraphQLString},
+                openingImageUrl: { type: GraphQLString }
             },
-            resolve(parentValue, { title, author, openingImageUrl }) {
-                return new Article({ title, author, openingImageUrl }).save(); // Include openingImageUrl when creating the article
+            resolve(parentValue, { title, author, openingImageUrl, category, summary }) {
+                return new Article({ title, author, openingImageUrl,category, summary }).save(); // Include openingImageUrl when creating the article
             }
         },
         updateArticleTitle: {

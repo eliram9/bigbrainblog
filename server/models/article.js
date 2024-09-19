@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const ArticleSchema = new Schema({
-  title: { type: String, required: true }, // Added 'required' for better data integrity
+  title: { type: String, required: true },
   author: { type: String, required: true }, 
   createdDate: {
     type: Date,
@@ -19,6 +19,8 @@ const ArticleSchema = new Schema({
       message: props => `${props.value} is not a valid image URL!`
     }
   },
+  category: {type: String, required: true},
+  summary: {type: String, required: true},
   user: {
     type: Schema.Types.ObjectId,
     ref: 'user'

@@ -1,33 +1,24 @@
-import gql from 'graphql-tag';
 import React, { useState, useEffect } from 'react';
+
 import { useMutation } from '@apollo/client';
 import { Link, useNavigate } from 'react-router-dom';
 import { FaArrowLeftLong } from "react-icons/fa6";
 
 import { GET_ALL_ARTICLES_QUERY } from '../queries/fetchAllArticles';
+import { CREATE_NEW_ARTICLE } from '../queries/addNewArticle';
 import { auth, signInWithGoogle } from '../utils/firebase';
-
-const CREATE_NEW_ARTICLE = gql`
-    mutation CreateArticle($title: String, $author: String, $openingImageUrl: String) {
-        addArticle(title: $title, author: $author, openingImageUrl: $openingImageUrl) {
-            id
-            title
-            author
-            openingImageUrl
-            createdDate
-        }
-    }
-`;
 
 const ArticleCreate = () => {
     const [title, setTitle] = useState('');
     const [author, setAuthor] = useState('');  
-    const [openingImageUrl, setOpeningImageUrl] = useState(''); // New state for openingImageUrl
+    const [openingImageUrl, setOpeningImageUrl] = useState('');
+    const [summary, setSummary] = useState(''); // New state for summary
+    const [category, setCategory] = useState(''); // New state for category
     const [errorMessage, setErrorMessage] = useState('');
     const [isAuthenticated, setIsAuthenticated] = useState(false);
 
     const [createArticle, { data, loading, error }] = useMutation(CREATE_NEW_ARTICLE);
-    const navigate = useNavigate(); // Use the navigate hook for navigation
+    const navigate = useNavigate();
 
     // Track authentication state
     useEffect(() => {
@@ -43,19 +34,31 @@ const ArticleCreate = () => {
         // Validate the author field
         if (author.trim().length < 2) {
             setErrorMessage('Author name must be at least 2 characters long.');
-            return; // Stop further execution
+            return;
         }
         
         // Validate the title length
         if (title.trim().length < 2) {
             setErrorMessage('Title must be at least 2 characters long.');
-            return; // Stop further execution
+            return;
+        }
+
+        // Validate the summary
+        if (summary.trim().length < 3) {
+            setErrorMessage('Summary must be at least 3 characters long.');
+            return;
+        }
+
+        // Validate the category
+        if (category.trim().length < 3) {
+            setErrorMessage('Category must be at least 3 characters long.');
+            return;
         }
 
         // Validate the openingImageUrl if provided
         if (openingImageUrl.trim() && !/^https?:\/\/.+\.(jpg|jpeg|png|webp|avif|gif|svg)$/.test(openingImageUrl.trim())) {
             setErrorMessage('Please enter a valid image URL (jpg, jpeg, png, webp, avif, gif, svg).');
-            return; // Stop further execution
+            return;
         }
 
         // If validation passes, clear the error message and proceed
@@ -64,17 +67,19 @@ const ArticleCreate = () => {
             variables: {
                 title: title.trim(),
                 author: author.trim(),
-                openingImageUrl: openingImageUrl.trim() || null // Send null if no URL provided
+                openingImageUrl: openingImageUrl.trim() || null,
+                summary: summary.trim(),
+                category: category.trim()
             },
-            refetchQueries: [{ query: GET_ALL_ARTICLES_QUERY }] // Refetch the articles query
-            // Right after submission, clean the input and navigate to "/" (ArticleList)     
+            refetchQueries: [{ query: GET_ALL_ARTICLES_QUERY }]
         }).then(() => {
             setTitle(''); 
             setAuthor(''); 
-            setOpeningImageUrl(''); // Clear the openingImageUrl input after submission
+            setOpeningImageUrl('');
+            setSummary(''); // Clear summary input
+            setCategory(''); // Clear category input
             navigate('/');
         }).catch((err) => {
-            // Handle any errors that occur during mutation
             setErrorMessage('An error occurred while creating the article. Please try again.');
             console.error(err);
         });
@@ -96,7 +101,7 @@ const ArticleCreate = () => {
                     onChange={(evt) => setAuthor(evt.target.value)}
                     value={author}
                     className='p-1 w-full mb-5'
-                    disabled={!isAuthenticated} // Disable input if not authenticated
+                    disabled={!isAuthenticated}
                     placeholder="Enter author name"
                 />
 
@@ -106,8 +111,29 @@ const ArticleCreate = () => {
                     onChange={(evt) => setTitle(evt.target.value)}
                     value={title}
                     className='p-1 w-full mb-5'
-                    disabled={!isAuthenticated} // Disable input if not authenticated
+                    disabled={!isAuthenticated}
                     placeholder="Enter article title"
+                />
+
+                {/* Summary */}
+                <label>Summary: </label>
+                <textarea 
+                    onChange={(evt) => setSummary(evt.target.value)}
+                    value={summary}
+                    className='p-1 w-full mb-5'
+                    disabled={!isAuthenticated}
+                    placeholder="Enter a brief summary"
+                    rows="4"
+                ></textarea>
+
+                {/* Category */}
+                <label>Category: </label>
+                <input 
+                    onChange={(evt) => setCategory(evt.target.value)}
+                    value={category}
+                    className='p-1 w-full mb-5'
+                    disabled={!isAuthenticated}
+                    placeholder="Enter article category"
                 />
 
                 {/* Opening Image URL */}
@@ -116,7 +142,7 @@ const ArticleCreate = () => {
                     onChange={(evt) => setOpeningImageUrl(evt.target.value)}
                     value={openingImageUrl}
                     className='p-1 w-full mb-5'
-                    disabled={!isAuthenticated} // Disable input if not authenticated
+                    disabled={!isAuthenticated}
                     placeholder="Enter opening image URL (optional)"
                 />
 
@@ -124,22 +150,21 @@ const ArticleCreate = () => {
                 {errorMessage && <p className='text-xs text-red-500'>{errorMessage}</p>}
                 <button 
                     type="submit"
-                    disabled={!isAuthenticated} // Disable button if not authenticated
-                    className={`w-fit px-5 py-2 border mb-5 ${isAuthenticated 
+                    disabled={!isAuthenticated || loading} // Disable during submission
+                    className={`w-fit px-5 py-2 border mb-5 ${isAuthenticated && !loading 
                         ? 'bg-[#613A28] text-white hover:bg-gray-500' 
                         : 'bg-gray-500 text-gray-700 cursor-not-allowed'}`
                     }
                     onClick={(evt) => {
                         if (!isAuthenticated) {
-                            evt.preventDefault(); // Prevents form submission
-                            signInWithGoogle(); // Opens the Google login
+                            evt.preventDefault();
+                            signInWithGoogle();
                         }
                     }} 
                 >
-                    Submit
+                    {loading ? 'Submitting...' : 'Submit'}
                 </button>
             </form>
-            {loading && <p>Submitting...</p>}
             {error && <p className='text-xs text-red-500'>Error :( Please try again</p>}
             {data && <p className='text-green-600'>Article "{data.addArticle.title}" created successfully!</p>}
         </div>

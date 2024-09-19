@@ -5,6 +5,7 @@ export const GET_ARTICLE_DETAIL = gql`
         article(id: $id) {
             id
             title
+            openingImageUrl
             texts {
                 id
                 paragraph

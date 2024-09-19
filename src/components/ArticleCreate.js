@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from 'react';
-
 import gql from 'graphql-tag';
+import React, { useState, useEffect } from 'react';
 import { useMutation } from '@apollo/client';
 import { Link, useNavigate } from 'react-router-dom';
 import { FaArrowLeftLong } from "react-icons/fa6";
@@ -8,13 +7,13 @@ import { FaArrowLeftLong } from "react-icons/fa6";
 import { GET_ALL_ARTICLES_QUERY } from '../queries/fetchAllArticles';
 import { auth, signInWithGoogle } from '../utils/firebase';
 
-
 const CREATE_NEW_ARTICLE = gql`
-    mutation CreateArticle($title: String, $author: String) {
-        addArticle(title: $title, author: $author) {
+    mutation CreateArticle($title: String, $author: String, $openingImageUrl: String) {
+        addArticle(title: $title, author: $author, openingImageUrl: $openingImageUrl) {
             id
             title
             author
+            openingImageUrl
             createdDate
         }
     }
@@ -23,6 +22,7 @@ const CREATE_NEW_ARTICLE = gql`
 const ArticleCreate = () => {
     const [title, setTitle] = useState('');
     const [author, setAuthor] = useState('');  
+    const [openingImageUrl, setOpeningImageUrl] = useState(''); // New state for openingImageUrl
     const [errorMessage, setErrorMessage] = useState('');
     const [isAuthenticated, setIsAuthenticated] = useState(false);
 
@@ -41,31 +41,44 @@ const ArticleCreate = () => {
         evt.preventDefault();
 
         // Validate the author field
-        if (author.length < 2) {
+        if (author.trim().length < 2) {
             setErrorMessage('Author name must be at least 2 characters long.');
             return; // Stop further execution
         }
         
         // Validate the title length
-        if (title.length < 2) {
+        if (title.trim().length < 2) {
             setErrorMessage('Title must be at least 2 characters long.');
             return; // Stop further execution
         }
-            // If validation passes, clear the error message and proceed
-            setErrorMessage('');
-            createArticle({
-                variables: {
-                    title: title,
-                    author: author // Pass the author variable here
-                },
-                refetchQueries: [{ query: GET_ALL_ARTICLES_QUERY }] // Refetch the articles query
-                // Right after submission, clean the input and navigate to "/" (ArticleList)     
-            }).then(() => {
-                setTitle(''); 
-                setAuthor(''); // Clear the author input after submission
-                navigate('/');
-            });
-        };
+
+        // Validate the openingImageUrl if provided
+        if (openingImageUrl.trim() && !/^https?:\/\/.+\.(jpg|jpeg|png|webp|avif|gif|svg)$/.test(openingImageUrl.trim())) {
+            setErrorMessage('Please enter a valid image URL (jpg, jpeg, png, webp, avif, gif, svg).');
+            return; // Stop further execution
+        }
+
+        // If validation passes, clear the error message and proceed
+        setErrorMessage('');
+        createArticle({
+            variables: {
+                title: title.trim(),
+                author: author.trim(),
+                openingImageUrl: openingImageUrl.trim() || null // Send null if no URL provided
+            },
+            refetchQueries: [{ query: GET_ALL_ARTICLES_QUERY }] // Refetch the articles query
+            // Right after submission, clean the input and navigate to "/" (ArticleList)     
+        }).then(() => {
+            setTitle(''); 
+            setAuthor(''); 
+            setOpeningImageUrl(''); // Clear the openingImageUrl input after submission
+            navigate('/');
+        }).catch((err) => {
+            // Handle any errors that occur during mutation
+            setErrorMessage('An error occurred while creating the article. Please try again.');
+            console.error(err);
+        });
+    };
 
     return (
         <div className='px-7 py-5'>
@@ -84,16 +97,29 @@ const ArticleCreate = () => {
                     value={author}
                     className='p-1 w-full mb-5'
                     disabled={!isAuthenticated} // Disable input if not authenticated
+                    placeholder="Enter author name"
                 />
 
-                <label>Article new article title: </label>
+                {/* Article Title */}
+                <label>Article Title: </label>
                 <input 
                     onChange={(evt) => setTitle(evt.target.value)}
                     value={title}
                     className='p-1 w-full mb-5'
                     disabled={!isAuthenticated} // Disable input if not authenticated
+                    placeholder="Enter article title"
                 />
-                
+
+                {/* Opening Image URL */}
+                <label>Opening Image URL: </label>
+                <input 
+                    onChange={(evt) => setOpeningImageUrl(evt.target.value)}
+                    value={openingImageUrl}
+                    className='p-1 w-full mb-5'
+                    disabled={!isAuthenticated} // Disable input if not authenticated
+                    placeholder="Enter opening image URL (optional)"
+                />
+
                 {/* Validation error message */}
                 {errorMessage && <p className='text-xs text-red-500'>{errorMessage}</p>}
                 <button 
@@ -114,7 +140,7 @@ const ArticleCreate = () => {
                 </button>
             </form>
             {loading && <p>Submitting...</p>}
-            {error && <p>Error :( Please try again</p>}
+            {error && <p className='text-xs text-red-500'>Error :( Please try again</p>}
             {data && <p className='text-green-600'>Article "{data.addArticle.title}" created successfully!</p>}
         </div>
     )

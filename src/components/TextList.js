@@ -1,5 +1,5 @@
+// TextList.js
 import React, { useEffect, useState } from 'react';
-
 import { useMutation } from '@apollo/client';
 import { IoTrashOutline } from "react-icons/io5";
 import { LuFileEdit } from "react-icons/lu";
@@ -8,16 +8,52 @@ import { auth } from '../utils/firebase';
 import { DELETE_PARAGRAPH } from '../queries/deleteParagraph';
 import { UPDATE_PARAGRAPH } from '../queries/updateParagraph'; 
 import { GET_ARTICLE_DETAIL } from '../queries/fetchArticle';
+import { getMediaType, getYouTubeID, getVimeoID } from '../utils/mediaUtils';
 
-
-// Any paragraph on the list
-const Item = ({ children, isAuthenticated, onDelete, onEdit }) => {
-    const plainText = children.replace(/<\/?[^>]+(>|$)/g, ""); // Strips out HTML tags - display plain text.
-
+// Item Component to display each paragraph or media
+const Item = ({ paragraph, isAuthenticated, onDelete, onEdit }) => {
+    const mediaType = getMediaType(paragraph);
+    
     return (
         <div className='flex py-3 px-4 border border-green-700 mb-5 overflow-auto hover:bg-gray-300'>
             <div className='flex-grow mr-3'>
-                {plainText}
+                {mediaType === 'image' && <img src={paragraph} alt="User provided" className='max-w-full h-auto' />}
+                {mediaType === 'gif' && <img src={paragraph} alt="GIF" className='max-w-full h-auto' />}
+                {mediaType === 'video' && 
+                    <video controls className='max-w-full h-auto'>
+                        <source src={paragraph} type={`video/${paragraph.substring(paragraph.lastIndexOf('.') + 1)}`} />
+                        Your browser does not support the video tag.
+                    </video>
+                }
+                {mediaType === 'audio' && 
+                    <audio controls className='w-full'>
+                        <source src={paragraph} type={`audio/${paragraph.substring(paragraph.lastIndexOf('.') + 1)}`} />
+                        Your browser does not support the audio element.
+                    </audio>
+                }
+                {mediaType === 'youtube' && 
+                    <iframe 
+                        width="560" 
+                        height="315" 
+                        src={`https://www.youtube.com/embed/${getYouTubeID(paragraph)}`}
+                        title="YouTube video player" 
+                        frameBorder="0" 
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                        allowFullScreen
+                    ></iframe>
+                }
+                {mediaType === 'vimeo' && 
+                    <iframe 
+                        src={`https://player.vimeo.com/video/${getVimeoID(paragraph)}`} 
+                        width="640" 
+                        height="360" 
+                        frameBorder="0" 
+                        allow="autoplay; fullscreen; picture-in-picture" 
+                        allowFullScreen
+                        title="Vimeo video player"
+                    ></iframe>
+                }
+                {mediaType === 'text' && <p>{paragraph}</p>}
             </div>
             
             <div className='flex items-center space-x-3'>
@@ -28,7 +64,7 @@ const Item = ({ children, isAuthenticated, onDelete, onEdit }) => {
                 </div>
 
                 <div className={`flex items-center ${isAuthenticated ? 'cursor-pointer text-red-600' : 'cursor-not-allowed text-gray-400'}`}
-                     onClick={onDelete}  // Trigger the delete handler
+                     onClick={onDelete}
                 >
                     <IoTrashOutline />
                 </div>
@@ -117,12 +153,11 @@ const TextList = ({ articleId, texts }) => {
             <h6>Paragraphs:</h6>
             {texts.map((text) => (
                 <Item key={text.id}
+                      paragraph={text.paragraph}
                       isAuthenticated={isAuthenticated}    
                       onDelete={() => onDeleteClick(text.id)}  // Trigger delete confirmation
                       onEdit={() => onEditClick(text.id, text.paragraph)}  // Pass current paragraph for editing
-                >
-                    {text.paragraph}
-                </Item>
+                />
             ))}
 
             {/* Popup for delete confirmation */}

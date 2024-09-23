@@ -19,7 +19,12 @@ const ArticleSchema = new Schema({
       message: props => `${props.value} is not a valid image URL!`
     }
   },
-  category: {type: String, required: true},
+  category: {
+    type: String,
+    required: true,
+    enum: ['EMDR Therapy General', 'EMDR for Trauma and PTSD', 'EMDR for Anxiety and Stress', 'EMDR and ADHD', 'EMDR Success Stories'], // Restrict to these 5 options
+    message: 'Category is not valid.'
+  },
   summary: {type: String, required: true},
   user: {
     type: Schema.Types.ObjectId,

@@ -12,8 +12,8 @@ const ArticleCreate = () => {
     const [title, setTitle] = useState('');
     const [author, setAuthor] = useState('');  
     const [openingImageUrl, setOpeningImageUrl] = useState('');
-    const [summary, setSummary] = useState(''); // New state for summary
-    const [category, setCategory] = useState(''); // New state for category
+    const [summary, setSummary] = useState(''); 
+    const [category, setCategory] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
     const [isAuthenticated, setIsAuthenticated] = useState(false);
 
@@ -50,8 +50,8 @@ const ArticleCreate = () => {
         }
 
         // Validate the category
-        if (category.trim().length < 3) {
-            setErrorMessage('Category must be at least 3 characters long.');
+        if (!category) {
+            setErrorMessage('Please select a valid category.');
             return;
         }
 
@@ -69,15 +69,15 @@ const ArticleCreate = () => {
                 author: author.trim(),
                 openingImageUrl: openingImageUrl.trim() || null,
                 summary: summary.trim(),
-                category: category.trim()
+                category
             },
             refetchQueries: [{ query: GET_ALL_ARTICLES_QUERY }]
         }).then(() => {
             setTitle(''); 
             setAuthor(''); 
             setOpeningImageUrl('');
-            setSummary(''); // Clear summary input
-            setCategory(''); // Clear category input
+            setSummary('');
+            setCategory('');
             navigate('/');
         }).catch((err) => {
             setErrorMessage('An error occurred while creating the article. Please try again.');
@@ -127,14 +127,21 @@ const ArticleCreate = () => {
                 ></textarea>
 
                 {/* Category */}
+                {/* Category Dropdown */}
                 <label>Category: </label>
-                <input 
+                <select 
                     onChange={(evt) => setCategory(evt.target.value)}
                     value={category}
                     className='p-1 w-full mb-5'
                     disabled={!isAuthenticated}
-                    placeholder="Enter article category"
-                />
+                >
+                    <option value="">Select a Category</option>
+                    <option value="EMDR Therapy General">EMDR Therapy General</option>
+                    <option value="EMDR for Trauma and PTSD">EMDR for Trauma and PTSD</option>
+                    <option value="EMDR for Anxiety and Stress">EMDR for Anxiety and Stress</option>
+                    <option value="EMDR and ADHD">EMDR and ADHD</option>
+                    <option value="EMDR Success Stories">EMDR Success Stories</option>
+                </select>
 
                 {/* Opening Image URL */}
                 <label>Opening Image URL: </label>
@@ -143,7 +150,7 @@ const ArticleCreate = () => {
                     value={openingImageUrl}
                     className='p-1 w-full mb-5'
                     disabled={!isAuthenticated}
-                    placeholder="Enter opening image URL (optional)"
+                    placeholder="Enter opening image URL"
                 />
 
                 {/* Validation error message */}

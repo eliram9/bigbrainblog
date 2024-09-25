@@ -10,13 +10,14 @@ const ArticleSchema = new Schema({
   },
   openingImageUrl: { 
     type: String,
-    required: false, // Set to true if every article must have an image
+    required: false, // Optional if not every article needs an image
     validate: {
       validator: function(v) {
-        // Simple URL validation
-        return /^https?:\/\/.+\.(jpg|jpeg|png|webp|avif|gif|svg)$/.test(v);
+        // Validate both image URLs and Giphy GIFs
+        return /^https?:\/\/.+\.(jpg|jpeg|png|webp|avif|gif|svg)$/.test(v) || 
+               /^https:\/\/media\.giphy\.com\/media\/[a-zA-Z0-9]+\/giphy\.gif(\?.*)?$/.test(v);
       },
-      message: props => `${props.value} is not a valid image URL!`
+      message: props => `${props.value} is not a valid image or Giphy GIF URL!`
     }
   },
   category: {

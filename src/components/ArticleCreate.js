@@ -55,11 +55,13 @@ const ArticleCreate = () => {
             return;
         }
 
-        // Validate the openingImageUrl if provided
-        if (openingImageUrl.trim() && !/^https?:\/\/.+\.(jpg|jpeg|png|webp|avif|gif|svg)$/.test(openingImageUrl.trim())) {
-            setErrorMessage('Please enter a valid image URL (jpg, jpeg, png, webp, avif, gif, svg).');
-            return;
-        }
+        // Update the validation for image URL and Giphy URLs
+        if (openingImageUrl.trim() && 
+            !/^https?:\/\/.+\.(jpg|jpeg|png|webp|avif|gif|svg)$/.test(openingImageUrl.trim()) && 
+            !/^https:\/\/media\.giphy\.com\/media\/[a-zA-Z0-9]+\/giphy\.gif(\?.*)?$/.test(openingImageUrl.trim())) {
+                setErrorMessage('Please enter a valid image URL (jpg, jpeg, png, webp, avif, gif, svg, or Giphy GIF).');
+        return;
+}
 
         // If validation passes, clear the error message and proceed
         setErrorMessage('');

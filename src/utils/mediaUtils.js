@@ -1,5 +1,3 @@
-// utils/mediaUtils.js
-
 // Function to detect the media type from the URL
 export const getMediaType = (url) => {
     const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp'];

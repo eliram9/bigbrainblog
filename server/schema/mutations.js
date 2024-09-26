@@ -26,10 +26,11 @@ const mutation = new GraphQLObjectType({
             type: ArticleType,
             args: {
                 id: { type: GraphQLID },
-                title: { type: GraphQLString }
+                title: { type: GraphQLString },
+                summary: {type: GraphQLString}
             },
-            resolve(parentValue, { id, title }) {
-                return Article.findByIdAndUpdate(id, { title }, { new: true });
+            resolve(parentValue, { id, title, summary }) {
+                return Article.findByIdAndUpdate(id, { title, summary }, { new: true });
             }
         },
         deleteArticle: { 

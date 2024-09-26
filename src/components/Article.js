@@ -8,7 +8,7 @@ import { signInWithGoogle } from '../utils/firebase';
 import { formatDate } from '../utils/formatDate';
 
 // Article component for every article on the list.
-const Article = ({ id, title, createdDate, author, onArticleDelete, onTitleEdit, isAuthenticated }) => {
+const Article = ({ id, title, summary, createdDate, author, onArticleDelete, onTitleEdit, isAuthenticated }) => {
     return (
         <div className='mb-4'>
             <ul className='flex justify-between text-[#613A28] px-3 py-2 border border-[#613A28] hover:bg-gray-300 transition-colors duration-300 ease-in-out mb-4'>

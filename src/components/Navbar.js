@@ -17,7 +17,7 @@ const Navbar = () => {
     }, [user]);
 
     return (
-        <div className="flex justify-between items-center py-4 px-8 bg-gray-800 text-white">
+        <div className="flex justify-between items-center py-4 px-8 bg-slate-800 text-white">
             <Link to="/" className="text-xl font-bold">BigBrainBlog</Link>
             <div className="flex items-center">
                 {currentUser ? (
@@ -26,12 +26,12 @@ const Navbar = () => {
                             {/* Safely check for displayName or use a default value */}
                             {currentUser.displayName 
                                 ? 
-                                <p className='border-red-600 border p-1'>{currentUser.displayName.split(' ').map(name => name.charAt(0)).join('')}</p> 
+                                <p className='border-emerald-500 border rounded-full p-2'>{currentUser.displayName.split(' ').map(name => name.charAt(0)).join('')}</p> 
                                 : ''}
                         </div>
                         <button
                             onClick={signOutUser}
-                            className="text-white text-xl hover:text-red-600"
+                            className="text-white text-xl hover:text-rose-600"
                         >
                             <MdOutlineLogout />
                         </button>

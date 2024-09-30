@@ -1,3 +1,9 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.ql-editor {
+    font-size: 16px !important;
+    line-height: 1.8 !important;
+    font-family: 'Arial', sans-serif !important;
+  }

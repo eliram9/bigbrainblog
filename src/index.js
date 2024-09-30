@@ -32,7 +32,7 @@ const Root = () => {
     return (
         <ApolloProvider client={client}>
             <AuthProvider> {/* Wrap the entire app with AuthProvider */}
-                <div className="bg-[#F6EBDB] text-[#613A28] min-h-screen p-0 m-0">
+                <div className="bg-gray-200 text-slate-800 min-h-screen p-0 m-0">
                     <Router>
                         <Routes>
                             <Route path="/" element={<App />}>

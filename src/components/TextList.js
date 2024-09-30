@@ -15,7 +15,7 @@ const Item = ({ paragraph, isAuthenticated, onDelete, onEdit }) => {
     const mediaType = getMediaType(paragraph);
     
     return (
-        <div className='flex py-3 px-4 border border-green-700 mb-5 overflow-auto hover:bg-gray-300'>
+        <div className='flex py-3 px-4 border-[2px] rounded-sm border-emerald-600 mb-5 overflow-auto hover:bg-gray-300'>
             <div className='flex-grow mr-3'>
                 {mediaType === 'image' && <img src={paragraph} alt="User provided" className='max-w-full h-auto' />}
                 {mediaType === 'gif' && <img src={paragraph} alt="GIF" className='max-w-full h-auto' />}
@@ -57,13 +57,13 @@ const Item = ({ paragraph, isAuthenticated, onDelete, onEdit }) => {
             </div>
             
             <div className='flex items-center space-x-3'>
-                <div className={`flex items-center ${isAuthenticated ? 'cursor-pointer text-[#613A28]' : 'cursor-not-allowed text-gray-400'}`}
+                <div className={`flex items-center ${isAuthenticated ? 'cursor-pointer text-emerald-600' : 'cursor-not-allowed text-gray-400'}`}
                      onClick={onEdit}
                 >
                     <LuFileEdit />
                 </div>
 
-                <div className={`flex items-center ${isAuthenticated ? 'cursor-pointer text-red-600' : 'cursor-not-allowed text-gray-400'}`}
+                <div className={`flex items-center ${isAuthenticated ? 'cursor-pointer text-rose-600' : 'cursor-not-allowed text-gray-400'}`}
                      onClick={onDelete}
                 >
                     <IoTrashOutline />
@@ -186,15 +186,16 @@ const TextList = ({ articleId, texts }) => {
             {isEditPopupVisible && (
                 <>
                     <div className="fixed inset-0 bg-black bg-opacity-50 z-40"></div>
-                    <div className='fixed top-1/3 left-1/2 transform -translate-x-1/2 -translate-y-1/2 p-5 bg-white border border-gray-300 z-50 shadow-lg'>
+                    <div className='fixed w-1/2 top-1/3 left-1/2 transform -translate-x-1/2 -translate-y-1/2 p-5 bg-white border border-gray-300 z-50 shadow-lg'>
                         <h3 className='mb-4 text-lg font-semibold'>Edit Paragraph</h3>
                         <textarea
                             value={newParagraph}
-                            onChange={(e) => setNewParagraph(e.target.value)}
+                            onChange={(evt) => setNewParagraph(evt.target.value)}
                             className='w-full p-2 mb-4 border border-gray-300 rounded'
+                            rows={5}
                         />
                         <button 
-                            className='mr-3 bg-[#613A28] text-white py-1 px-3 hover:bg-[#573424] transition-colors duration-200'
+                            className='mr-3 bg-emerald-600 text-white py-1 px-3 hover:bg-emerald-700 transition-colors duration-200'
                             onClick={handleEditSave}  // Confirm and execute edit
                         >
                             Save

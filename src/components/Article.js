@@ -11,14 +11,15 @@ import { formatDate } from '../utils/formatDate';
 const Article = ({ id, title, summary, createdDate, author, onArticleDelete, onTitleEdit, isAuthenticated }) => {
     return (
         <div className='mb-4'>
-            <ul className='flex justify-between text-[#613A28] px-3 py-2 border border-[#613A28] hover:bg-gray-300 transition-colors duration-300 ease-in-out mb-4'>
+            <ul className='flex justify-between bg-white text-slate-800 px-3 py-2 border-[2px] rounded-sm border-emerald-600 mb-4 shadow-lg
+                          hover:bg-gray-300 transition-colors duration-300 ease-in-out '>
                 <Link to={`/articles/${id}`}>
                     {title}
                     <p className='text-xs text-gray-500 mt-2'>By: {author}</p>
                     <p className='text-xs text-gray-500'>Created Date: {formatDate(createdDate)}</p>
                 </Link>
                 <div className='flex'>
-                    <i className={`flex items-center mr-5 ${isAuthenticated ? 'cursor-pointer text-[#613A28]' : 'cursor-not-allowed text-gray-400'}`}
+                    <i className={`flex items-center mr-5 ${isAuthenticated ? 'cursor-pointer text-emerald-600' : 'cursor-not-allowed text-gray-400'}`}
                         onClick={() => isAuthenticated ? onTitleEdit(id, title) : signInWithGoogle()}
                     >
                         <LuFileEdit className="text-lg" />

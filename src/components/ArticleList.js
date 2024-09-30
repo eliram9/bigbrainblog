@@ -113,7 +113,7 @@ const ArticleList = () => {
             <div className="flex justify-end mt-4">
                 <button
                     className={`p-3 rounded-full ${
-                        isAuthenticated ? 'bg-green-800 text-white hover:bg-green-900' : 'bg-gray-400 text-gray-700 cursor-not-allowed'
+                        isAuthenticated ? 'bg-emerald-600 text-white hover:bg-emerald-700' : 'bg-gray-400 text-gray-700 cursor-not-allowed'
                     }`}
                     onClick={(evt) => {
                         if (!isAuthenticated) {

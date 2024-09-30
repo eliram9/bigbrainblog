@@ -31,7 +31,7 @@ const TextCreate = () => {
             [{ 'indent': '-1'}, { 'indent': '+1' }],
             [{ 'direction': 'rtl' }],
             [{ 'color': [] }, { 'background': [] }],
-            ['link', 'image'],
+            ['link'],
         ]
     };
 
@@ -91,8 +91,8 @@ const TextCreate = () => {
                 />
                 <button type="submit"
                         disabled={!isAuthenticated}
-                        className={`w-fit px-5 py-2 border ${isAuthenticated 
-                            ? 'bg-[#613A28] text-white hover:bg-gray-500 mt-5' 
+                        className={`w-fit px-5 py-2 border rounded-md ${isAuthenticated 
+                            ? 'bg-emerald-600 text-white hover:bg-emerald-700 mt-5' 
                             : 'bg-gray-500 text-gray-700 cursor-not-allowed mt-5'}`
                         }
                         onClick={(evt) => {
@@ -101,7 +101,7 @@ const TextCreate = () => {
                             }
                         }} 
                 >
-                    Submit
+                    Add
                 </button>
             </form>
             {successMessage && <p style={{ color: "green" }}>{successMessage}</p>}

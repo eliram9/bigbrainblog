@@ -174,8 +174,8 @@ const ArticleCreate = () => {
                     {loading ? 'Submitting...' : 'Submit'}
                 </button>
             </form>
-            {error && <p className='text-xs text-red-500'>Error :( Please try again</p>}
-            {data && <p className='text-green-600'>Article "{data.addArticle.title}" created successfully!</p>}
+            {error && <p className='text-xs text-rose-500'>Error :( Please try again</p>}
+            {data && <p className='text-emerald-600'>Article "{data.addArticle.title}" created successfully!</p>}
         </div>
     )
 }

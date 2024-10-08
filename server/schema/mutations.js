@@ -27,10 +27,14 @@ const mutation = new GraphQLObjectType({
             args: {
                 id: { type: GraphQLID },
                 title: { type: GraphQLString },
-                summary: {type: GraphQLString}
+                author: { type: GraphQLString },
+                category: { type: GraphQLString },
+                openingImageUrl: { type: GraphQLString },
+                summary: { type: GraphQLString }
             },
-            resolve(parentValue, { id, title, summary }) {
-                return Article.findByIdAndUpdate(id, { title, summary }, { new: true });
+            resolve(parentValue, args) {
+                const { id, ...updateFields } = args;
+                return Article.findByIdAndUpdate(id, updateFields, { new: true });
             }
         },
         deleteArticle: { 

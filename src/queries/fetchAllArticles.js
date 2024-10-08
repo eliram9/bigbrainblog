@@ -5,8 +5,10 @@ export const GET_ALL_ARTICLES_QUERY = gql`
         articles {
             id
             title
-            summary
             author
+            category
+            openingImageUrl
+            summary
             createdDate
         }
     }

@@ -34,6 +34,10 @@ const ArticleSchema = new Schema({
   texts: [{
     type: Schema.Types.ObjectId,
     ref: 'text'
+  }],
+  sources: [{
+    type: Schema.Types.ObjectId,
+    ref: 'source'
   }]
 });
 

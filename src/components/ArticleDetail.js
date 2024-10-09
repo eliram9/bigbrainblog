@@ -6,6 +6,7 @@ import { FaArrowLeftLong } from "react-icons/fa6";
 import { GET_ARTICLE_DETAIL } from '../queries/fetchArticle';
 import TextCreate from './TextCreate';
 import TextList from './TextList';
+import SourceList from './SourceList';
 
 const ArticleDetail = () => { 
     const { id } = useParams(); // Extract the article ID from the URL parameters
@@ -43,6 +44,7 @@ const ArticleDetail = () => {
 
             <TextCreate articleId={id} />
             <TextList texts={article.texts || []} articleId={id} />
+            <SourceList sources={article.sources || []} articleId={id} />
         </div>
     );
 };

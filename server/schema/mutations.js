@@ -1,10 +1,16 @@
 const graphql = require('graphql');
 const { GraphQLObjectType, GraphQLString, GraphQLID } = graphql;
 const mongoose = require('mongoose');
-const Article = mongoose.model('article'); // Replaces 'Song'
-const Text = mongoose.model('text'); // Replaces 'Lyric'
-const ArticleType = require('./article_type'); // Replaces 'SongType'
-const TextType = require('./text_type'); // Replaces 'LyricType'
+
+// Import your models
+const Article = mongoose.model('article');
+const Text = mongoose.model('text');
+const Source = mongoose.model('source');
+
+// Import your GraphQL types
+const ArticleType = require('./article_type');
+const TextType = require('./text_type');
+const SourceType = require('./source_type');
 
 const mutation = new GraphQLObjectType({
     name: 'Mutation',
@@ -77,6 +83,71 @@ const mutation = new GraphQLObjectType({
             resolve(parentValue, { id, paragraph }) {
                 return Text.updateParagraph(id, paragraph);  // Use the updateParagraph method from your schema
             }
+        },
+        addSourceToArticle: {
+            type: ArticleType,
+            args: {
+              articleId: { type: GraphQLID },
+              sourceName: { type: GraphQLString },
+              url: { type: GraphQLString },
+            },
+            async resolve(parentValue, { articleId, sourceName, url }) {
+                try {
+                    // Create a new source
+                    const source = new Source({ sourceName, url });
+                    await source.save();
+        
+                    // Find the article and add the source
+                    const article = await Article.findById(articleId);
+                    article.sources.push(source);
+                    await article.save();
+        
+                    // Return the updated article
+                    return article;
+                } catch (error) {
+                    throw new Error(error);
+                }
+            },
+        },
+        updateSource: {
+            type: SourceType,
+            args: {
+                id: { type: GraphQLID },
+                sourceName: { type: GraphQLString },
+                url: { type: GraphQLString },
+            },
+            async resolve(parentValue, { id, sourceName, url }) {
+                try {
+                    const updatedSource = await Source.findByIdAndUpdate(
+                        id,
+                        { sourceName, url },
+                        { new: true }
+                    );
+                    return updatedSource;
+                } catch (error) {
+                    throw new Error(error);
+                }
+            },
+        },
+        deleteSource: {
+            type: GraphQLID,
+            args: {
+                id: { type: GraphQLID },
+            },
+            async resolve(parentValue, { id }) {
+                try {
+                    // Remove the source from any articles that reference it
+                    await Article.updateMany(
+                        { sources: id },
+                        { $pull: { sources: id } }
+                    );
+        
+                    const deletedSource = await Source.findByIdAndDelete(id);
+                    return deletedSource ? deletedSource.id : null;
+                } catch (error) {
+                    throw new Error(error);
+                }
+            },
         },
         likeText: { 
             type: TextType,

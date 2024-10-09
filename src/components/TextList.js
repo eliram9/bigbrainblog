@@ -150,7 +150,7 @@ const TextList = ({ articleId, texts }) => {
 
     return (
         <div className='py-4'>
-            <h6>Paragraphs:</h6>
+            <h3  className="text-lg font-semibold mb-2">Paragraphs:</h3>
             {texts.map((text) => (
                 <Item key={text.id}
                       paragraph={text.paragraph}
@@ -167,13 +167,13 @@ const TextList = ({ articleId, texts }) => {
                     <div className='fixed top-1/3 left-1/2 transform -translate-x-1/2 -translate-y-1/2 p-5 bg-white border border-gray-300 z-50 shadow-lg'>
                         <h3 className='mb-4 text-lg font-semibold'>Are you sure you want to delete this paragraph?</h3>
                         <button 
-                            className='mr-3 bg-red-600 text-white py-1 px-3 hover:bg-red-700 transition-colors duration-200'
+                            className='mr-3 bg-rose-600 text-white hover:bg-rose-700 transition-colors duration-200 py-1 px-2 rounded-md'
                             onClick={handleDeleteConfirm}  // Confirm and execute deletion
                         >
                             Delete
                         </button>
                         <button 
-                            className='border-gray-400 border text-gray-600 py-1 px-3 hover:bg-gray-100 transition-colors duration-200'
+                            className='bg-gray-500 border text-white hover:bg-gray-600 transition-colors duration-200 py-1 px-2 rounded-md'
                             onClick={handleDeleteCancel}  // Cancel deletion
                         >
                             Cancel
@@ -195,13 +195,13 @@ const TextList = ({ articleId, texts }) => {
                             rows={5}
                         />
                         <button 
-                            className='mr-3 bg-emerald-600 text-white py-1 px-3 hover:bg-emerald-700 transition-colors duration-200'
+                            className='mr-3 bg-emerald-600 text-white hover:bg-emerald-700 transition-colors duration-200 py-1 px-2 rounded-md'
                             onClick={handleEditSave}  // Confirm and execute edit
                         >
                             Save
                         </button>
                         <button 
-                            className='border-gray-400 border text-gray-600 py-1 px-3 hover:bg-gray-100 transition-colors duration-200'
+                            className='bg-gray-500 border text-white hover:bg-gray-600 transition-colors duration-200 py-1 px-2 rounded-md'
                             onClick={handleEditCancel}  // Cancel editing
                         >
                             Cancel

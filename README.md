@@ -13,6 +13,8 @@
 6. 🚀 **GitHub** - Hosting and deploying the application.
 7. 🎨 **Tailwind** - Rapidly styling the application with predefined classes, responsive design, and customization of the user interface.
 
+8. https://bigbrainblog-23f3bd84d9f8.herokuapp.com/
+
 ### Acknowledgements 🍻
 
 This project is based on and inspired by [GraphQL with React course](https://www.udemy.com/course/graphql-with-react-course/?couponCode=SKILLS4SALEA) by [Stephen Grider](https://github.com/stephengrider). 
